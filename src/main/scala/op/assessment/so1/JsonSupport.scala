@@ -2,7 +2,7 @@ package op.assessment.so1
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import op.assessment.so1.BidRoutes.{Ammount, Bids, Fail}
-import op.assessment.so1.NaiveBidsRepository.Bid
+import op.assessment.so1.BidsRepository.Bid
 import spray.json.DefaultJsonProtocol
 
 trait JsonSupport extends SprayJsonSupport {

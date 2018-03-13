@@ -1,10 +1,10 @@
 package op.assessment.so1
 
-import op.assessment.so1.NaiveBidsRepository.{Bid, Item, Player}
+import op.assessment.so1.BidsRepository.{Bid, Item, Player}
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.{ExecutionContext, Future}
 
-object NaiveBidsRepository {
+object BidsRepository {
 
   case class Item(item: String)
   case class Player(name: String)

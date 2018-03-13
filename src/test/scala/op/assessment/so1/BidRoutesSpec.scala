@@ -12,7 +12,7 @@ import org.scalatest.concurrent.ScalaFutures
 import scala.concurrent.{ExecutionContext, Future}
 
 object BidRoutesSpec {
-  import NaiveBidsRepository._
+  import BidsRepository._
 
   class FakeBidsRepo(implicit ec: ExecutionContext) extends NaiveBidsRepository {
     override def add(bid: Bid): Future[Unit] = {
