@@ -9,12 +9,13 @@ import op.assessment.so1.BidRoutes.Ammount
 import op.assessment.so1.BidRoutesSpec.{BidsNotFoundRepo, FailBidsRepo, FakeBidsRepo}
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
-import scala.concurrent.Future
+
+import scala.concurrent.{ExecutionContext, Future}
 
 object BidRoutesSpec {
   import BidsRepository._
 
-  class FakeBidsRepo extends BidsRepository {
+  class FakeBidsRepo(implicit ec: ExecutionContext) extends BidsRepository {
     override def add(bid: Bid): Future[Unit] = {
       Future.unit
     }
@@ -32,7 +33,7 @@ object BidRoutesSpec {
     }
   }
 
-  class BidsNotFoundRepo extends BidsRepository {
+  class BidsNotFoundRepo(implicit ec: ExecutionContext) extends BidsRepository {
     override def get(item: Item): Future[Option[Bid]] = {
       Future.successful(None)
     }
@@ -46,7 +47,7 @@ object BidRoutesSpec {
     }
   }
 
-  class FailBidsRepo extends BidsRepository {
+  class FailBidsRepo(implicit ec: ExecutionContext) extends BidsRepository {
     override def add(bid: Bid): Future[Unit] = {
       Future.failed(new RuntimeException("failed"))
     }

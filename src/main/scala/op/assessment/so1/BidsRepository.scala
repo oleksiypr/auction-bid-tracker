@@ -1,7 +1,8 @@
 package op.assessment.so1
 
 import op.assessment.so1.BidsRepository.{Bid, Item, Player}
-import scala.concurrent.Future
+import scala.collection.concurrent.TrieMap
+import scala.concurrent.{ExecutionContext, Future}
 
 object BidsRepository {
 
@@ -15,28 +16,47 @@ object BidsRepository {
   )
 }
 
-class BidsRepository {
+class BidsRepository(implicit ec: ExecutionContext) {
 
-  def add(bid: Bid): Future[Unit] = ???
+  private[this] val bidsByItem = TrieMap.empty[Item, List[Bid]]
+  private[this] val bidsByPlayer = TrieMap.empty[Player, List[Bid]]
+
+  bidsByItem.withDefaultValue(Nil)
+  bidsByPlayer.withDefaultValue(Nil)
+
+
+  def add(bid: Bid): Future[Unit] = Future {
+    val item = Item(bid.item)
+    val player = Player(bid.player)
+
+    bidsByItem += (item -> (bid :: bidsByItem(item)))
+    bidsByPlayer += (player -> (bid :: bidsByPlayer(player)))
+  }
 
   /**
     * Get a winner.
     * @param item an item a winner to be found for
     * @return bid won
     */
-  def get(item: Item): Future[Option[Bid]] = ???
+  def get(item: Item): Future[Option[Bid]] = Future {
+    bidsByItem.get(item).map(_.maxBy(_.value))
+  }
 
   /**
     * Get all bids for an item.
     * @param item an item to be searched by
     * @return bids for an item
     */
-  def all(item: Item): Future[List[Bid]] = ???
+  def all(item: Item): Future[List[Bid]] = Future {
+    bidsByItem(item)
+  }
 
   /**
     * Get all bids for a player.
     * @param player a player to be searched by
     * @return bids for a player
     */
-  def all(player: Player): Future[List[Bid]] = ???
+  def all(player: Player): Future[List[Bid]] = Future {
+    bidsByPlayer(player)
+  }
 }
