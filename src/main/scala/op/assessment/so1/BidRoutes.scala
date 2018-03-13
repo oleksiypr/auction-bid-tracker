@@ -9,7 +9,7 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.directives.MethodDirectives.{delete, get, post}
 import akka.http.scaladsl.server.directives.PathDirectives.path
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
-import op.assessment.so1.BidRoutes.Ammount
+import op.assessment.so1.BidRoutes.{Ammount, Fail}
 import op.assessment.so1.BidsRepository.Bid
 
 import scala.concurrent.Future
@@ -19,12 +19,12 @@ import scala.util.{Failure, Success}
 
 object BidRoutes {
   case class Ammount(value: Int)
+  case class Fail(err: String)
 }
 
 trait BidRoutes extends JsonSupport {
 
   implicit def system: ActorSystem
-
   implicit lazy val timeout = Timeout(5.seconds)
 
   val bidsRepo: BidsRepository
@@ -38,7 +38,10 @@ trait BidRoutes extends JsonSupport {
 
         onComplete(bidDone) {
           case Success(_) => complete(StatusCodes.NoContent)
-          case Failure(err) => ???
+          case Failure(err) => complete((
+              StatusCodes.InternalServerError,
+              Fail(err.getMessage)
+            ))
         }
       }
     }
