@@ -19,7 +19,7 @@ object BidRoutes {
 }
 
 /**
-  * Bids end points description.
+  * Bids end-points routes.
   *
   * 1. Record a user's bid on an item:
   *   PUT /bids/items/{itemId}/players/{playerName}
