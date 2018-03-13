@@ -7,12 +7,14 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.directives.MethodDirectives.get
 import akka.http.scaladsl.server.directives.PathDirectives.path
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
-import op.assessment.so1.BidRoutes.{Ammount, Fail}
+import op.assessment.so1.BidRoutes.{Ammount, Bids, Fail}
 import op.assessment.so1.BidsRepository.Bid
+
 import scala.util.{Failure, Success}
 
 object BidRoutes {
   case class Ammount(value: Int)
+  case class Bids(values: List[Bid])
   case class Fail(err: String)
 }
 
@@ -48,6 +50,20 @@ trait BidRoutes extends JsonSupport {
           StatusCodes.InternalServerError,
           Fail(err.getMessage)
         ))
+      }
+    }
+  } ~ path("bids") {
+    get {
+      parameters('item) { item =>
+        val bids = bidsRepo.all(item)
+        onComplete(bids) {
+          case Success(values) if values.nonEmpty => complete((StatusCodes.OK, Bids(values)))
+          case Success(_) => complete(StatusCodes.NotFound)
+          case Failure(err) => complete((
+            StatusCodes.InternalServerError,
+            Fail(err.getMessage)
+          ))
+        }
       }
     }
   }

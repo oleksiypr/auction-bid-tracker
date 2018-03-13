@@ -3,11 +3,13 @@ package op.assessment.so1
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import op.assessment.so1.BidRoutes.Ammount
 import op.assessment.so1.BidRoutesSpec.{BidsNotFoundRepo, FailBidsRepo, FakeBidsRepo}
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
+
 import scala.concurrent.Future
 
 object BidRoutesSpec {
@@ -21,11 +23,19 @@ object BidRoutesSpec {
     override def getWinner(item: String): Future[Option[Bid]] = {
       Future.successful(Some(Bid("Joe", "item-1", 100)))
     }
+
+    override def all(item: String): Future[List[Bid]] = {
+      Future.successful(List(Bid("Joe", "item-1", 100)))
+    }
   }
 
   class BidsNotFoundRepo extends BidsRepository {
     override def getWinner(item: String): Future[Option[Bid]] = {
       Future.successful(None)
+    }
+
+    override def all(item: String): Future[List[Bid]] = {
+      Future.successful(Nil)
     }
   }
 
@@ -43,7 +53,7 @@ class BidRoutesSpec extends
     "return 204 No Content" in new BidRoutes {
       implicit val system: ActorSystem = self.system
 
-      lazy val routes = bidRoutes
+      lazy val routes: Route = bidRoutes
       override val bidsRepo: BidsRepository = new FakeBidsRepo
 
       val request: HttpRequest = Put(
@@ -59,7 +69,7 @@ class BidRoutesSpec extends
     "return 500  Internal Server Error" in new BidRoutes {
       implicit val system: ActorSystem = self.system
 
-      lazy val routes = bidRoutes
+      lazy val routes: Route = bidRoutes
       override val bidsRepo: BidsRepository = new FailBidsRepo
 
       val request: HttpRequest = Put(
@@ -80,7 +90,7 @@ class BidRoutesSpec extends
     "return 200 Ok" in new BidRoutes {
       implicit val system: ActorSystem = self.system
 
-      lazy val routes = bidRoutes
+      lazy val routes: Route = bidRoutes
       override val bidsRepo: BidsRepository = new FakeBidsRepo
 
       val request: HttpRequest = Get("/bids/items/item-1")
@@ -95,10 +105,40 @@ class BidRoutesSpec extends
     "return 404 Not Found" in new BidRoutes {
       implicit val system: ActorSystem = self.system
 
-      lazy val routes = bidRoutes
+      lazy val routes: Route = bidRoutes
       override val bidsRepo: BidsRepository = new BidsNotFoundRepo
 
       val request: HttpRequest = Get("/bids/items/item-1")
+
+      request ~> routes ~> check {
+        status should ===(StatusCodes.NotFound)
+      }
+    }
+  }
+
+  "BidRoutes GET bids for an item" should {
+    "return 200 Ok" in new BidRoutes {
+      implicit val system: ActorSystem = self.system
+
+      lazy val routes: Route = bidRoutes
+      override val bidsRepo: BidsRepository = new FakeBidsRepo
+
+      val request: HttpRequest = Get("/bids?item=item-1")
+
+      request ~> routes ~> check {
+        status should ===(StatusCodes.OK)
+        contentType should === (ContentTypes.`application/json`)
+        entityAs[String] should ===(
+          """{"values":[{"player":"Joe","item":"item-1","value":100}]}""".stripMargin)
+      }
+    }
+    "return 404 Not Found" in new BidRoutes {
+      implicit val system: ActorSystem = self.system
+
+      lazy val routes: Route = bidRoutes
+      override val bidsRepo: BidsRepository = new BidsNotFoundRepo
+
+      val request: HttpRequest = Get("/bids?item=item-1")
 
       request ~> routes ~> check {
         status should ===(StatusCodes.NotFound)

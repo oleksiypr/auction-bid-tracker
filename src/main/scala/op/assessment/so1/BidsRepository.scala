@@ -14,4 +14,5 @@ object BidsRepository {
 class BidsRepository {
   def add(bid: Bid): Future[Unit] = ???
   def getWinner(item: String): Future[Option[Bid]] = ???
+  def all(item: String): Future[List[Bid]] = ???
 }
