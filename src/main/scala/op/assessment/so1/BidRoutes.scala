@@ -8,7 +8,7 @@ import akka.http.scaladsl.server.directives.MethodDirectives.get
 import akka.http.scaladsl.server.directives.PathDirectives.path
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import op.assessment.so1.BidRoutes.{Ammount, Bids, Fail}
-import op.assessment.so1.BidsRepository.{Bid, Item, Player}
+import op.assessment.so1.NaiveBidsRepository.{Bid, Item, Player}
 
 import scala.util.{Failure, Success}
 
@@ -18,6 +18,21 @@ object BidRoutes {
   case class Fail(err: String)
 }
 
+/**
+  * Bids end points description.
+  *
+  * 1. Record a user's bid on an item:
+  *   PUT /bids/items/{itemId}/players/{playerName}
+  *
+  * 2. Get the current winning bid for an item:
+  *   GET /bids/items/{itemId}
+  *
+  * 3. Get all the bids for an item:
+  *   GET /bids?item={itemId}
+  *
+  * 4. Get all the items on which a user has bid:
+  *   GET /bids/items?player={playerName}
+  */
 trait BidRoutes extends JsonSupport {
 
   implicit def system: ActorSystem

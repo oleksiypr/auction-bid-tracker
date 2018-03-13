@@ -9,13 +9,12 @@ import op.assessment.so1.BidRoutes.Ammount
 import op.assessment.so1.BidRoutesSpec.{BidsNotFoundRepo, FailBidsRepo, FakeBidsRepo}
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
-
 import scala.concurrent.{ExecutionContext, Future}
 
 object BidRoutesSpec {
-  import BidsRepository._
+  import NaiveBidsRepository._
 
-  class FakeBidsRepo(implicit ec: ExecutionContext) extends BidsRepository {
+  class FakeBidsRepo(implicit ec: ExecutionContext) extends NaiveBidsRepository {
     override def add(bid: Bid): Future[Unit] = {
       Future.unit
     }
@@ -33,7 +32,7 @@ object BidRoutesSpec {
     }
   }
 
-  class BidsNotFoundRepo(implicit ec: ExecutionContext) extends BidsRepository {
+  class BidsNotFoundRepo(implicit ec: ExecutionContext) extends NaiveBidsRepository {
     override def get(item: Item): Future[Option[Bid]] = {
       Future.successful(None)
     }
@@ -47,7 +46,7 @@ object BidRoutesSpec {
     }
   }
 
-  class FailBidsRepo(implicit ec: ExecutionContext) extends BidsRepository {
+  class FailBidsRepo(implicit ec: ExecutionContext) extends NaiveBidsRepository {
     override def add(bid: Bid): Future[Unit] = {
       Future.failed(new RuntimeException("failed"))
     }
@@ -62,7 +61,7 @@ class BidRoutesSpec extends
       implicit val system: ActorSystem = self.system
 
       lazy val routes: Route = bidRoutes
-      override val bidsRepo: BidsRepository = new FakeBidsRepo
+      override val bidsRepo: NaiveBidsRepository = new FakeBidsRepo
 
       val request: HttpRequest = Put(
           "/bids/items/item-1/players/joe"
@@ -78,7 +77,7 @@ class BidRoutesSpec extends
       implicit val system: ActorSystem = self.system
 
       lazy val routes: Route = bidRoutes
-      override val bidsRepo: BidsRepository = new FailBidsRepo
+      override val bidsRepo: NaiveBidsRepository = new FailBidsRepo
 
       val request: HttpRequest = Put(
           "/bids/items/item-1/players/joe"
@@ -99,7 +98,7 @@ class BidRoutesSpec extends
       implicit val system: ActorSystem = self.system
 
       lazy val routes: Route = bidRoutes
-      override val bidsRepo: BidsRepository = new FakeBidsRepo
+      override val bidsRepo: NaiveBidsRepository = new FakeBidsRepo
 
       val request: HttpRequest = Get("/bids/items/item-1")
 
@@ -114,7 +113,7 @@ class BidRoutesSpec extends
       implicit val system: ActorSystem = self.system
 
       lazy val routes: Route = bidRoutes
-      override val bidsRepo: BidsRepository = new BidsNotFoundRepo
+      override val bidsRepo: NaiveBidsRepository = new BidsNotFoundRepo
 
       val request: HttpRequest = Get("/bids/items/item-1")
 
@@ -129,7 +128,7 @@ class BidRoutesSpec extends
       implicit val system: ActorSystem = self.system
 
       lazy val routes: Route = bidRoutes
-      override val bidsRepo: BidsRepository = new FakeBidsRepo
+      override val bidsRepo: NaiveBidsRepository = new FakeBidsRepo
 
       val request: HttpRequest = Get("/bids?item=item-1")
 
@@ -144,7 +143,7 @@ class BidRoutesSpec extends
       implicit val system: ActorSystem = self.system
 
       lazy val routes: Route = bidRoutes
-      override val bidsRepo: BidsRepository = new BidsNotFoundRepo
+      override val bidsRepo: NaiveBidsRepository = new BidsNotFoundRepo
 
       val request: HttpRequest = Get("/bids?item=item-1")
 
@@ -159,7 +158,7 @@ class BidRoutesSpec extends
       implicit val system: ActorSystem = self.system
 
       lazy val routes: Route = bidRoutes
-      override val bidsRepo: BidsRepository = new FakeBidsRepo
+      override val bidsRepo: NaiveBidsRepository = new FakeBidsRepo
 
       val request: HttpRequest = Get("/bids/items?player=joe")
 
@@ -174,7 +173,7 @@ class BidRoutesSpec extends
       implicit val system: ActorSystem = self.system
 
       lazy val routes: Route = bidRoutes
-      override val bidsRepo: BidsRepository = new BidsNotFoundRepo
+      override val bidsRepo: NaiveBidsRepository = new BidsNotFoundRepo
 
       val request: HttpRequest = Get("/bids/items?player=joe")
 
