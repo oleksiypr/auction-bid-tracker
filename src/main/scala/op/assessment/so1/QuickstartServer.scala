@@ -15,7 +15,7 @@ object QuickstartServer extends App with UserRoutes {
   // set up ActorSystem and other dependencies here
   //#main-class
   //#server-bootstrapping
-  implicit val system: ActorSystem = ActorSystem("helloAkkaHttpServer")
+  implicit val system: ActorSystem = ActorSystem("bitTrackerServer")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   //#server-bootstrapping
 
