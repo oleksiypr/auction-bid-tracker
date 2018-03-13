@@ -1,20 +1,14 @@
 package op.assessment.so1
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.server.Route
-import akka.util.Timeout
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.server.directives.MethodDirectives.{delete, get, post}
+import akka.http.scaladsl.server.directives.MethodDirectives.get
 import akka.http.scaladsl.server.directives.PathDirectives.path
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import op.assessment.so1.BidRoutes.{Ammount, Fail}
 import op.assessment.so1.BidsRepository.Bid
-
-import scala.concurrent.Future
-import scala.concurrent.duration._
-import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
 object BidRoutes {
@@ -25,7 +19,6 @@ object BidRoutes {
 trait BidRoutes extends JsonSupport {
 
   implicit def system: ActorSystem
-  implicit lazy val timeout = Timeout(5.seconds)
 
   val bidsRepo: BidsRepository
 
@@ -43,6 +36,18 @@ trait BidRoutes extends JsonSupport {
               Fail(err.getMessage)
             ))
         }
+      }
+    }
+  } ~ path("bids" / "items" / Segment) { item =>
+    get {
+      val winner = bidsRepo.getWinner(item)
+      onComplete(winner) {
+        case Success(Some(bid)) => complete((StatusCodes.OK, bid))
+        case Success(None) => complete(StatusCodes.NotFound)
+        case Failure(err) => complete((
+          StatusCodes.InternalServerError,
+          Fail(err.getMessage)
+        ))
       }
     }
   }
