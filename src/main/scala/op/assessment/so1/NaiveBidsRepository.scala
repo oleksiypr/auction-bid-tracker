@@ -1,5 +1,6 @@
 package op.assessment.so1
 
+import com.redis.RedisClient
 import op.assessment.so1.BidsRepository.{Bid, Item, Player}
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.{ExecutionContext, Future}
@@ -26,6 +27,7 @@ trait BidsRepository {
     * @return bid won
     */
   def get(item: Item): Future[Option[Bid]]
+
   /**
     * Get all bids for an item.
     * @param item an item to be searched by
@@ -80,4 +82,31 @@ class NaiveBidsRepository(implicit ec: ExecutionContext) extends BidsRepository 
   def all(player: Player): Future[List[Bid]] = Future {
     bidsByPlayer(player)
   }
+}
+
+class RedisBidsRepository extends BidsRepository {
+
+  private[this] val redis = new RedisClient("localhost", 6379)
+
+  def add(bid: Bid): Future[Unit] = {
+    ???
+  }
+
+  def get(item: Item): Future[Option[Bid]] = ???
+
+  /**
+    * Get all bids for an item.
+    *
+    * @param item an item to be searched by
+    * @return bids for an item
+    */
+  def all(item: Item): Future[List[Bid]] = ???
+
+  /**
+    * Get all bids for a player.
+    *
+    * @param player a player to be searched by
+    * @return bids for a player
+    */
+  def all(player: Player): Future[List[Bid]] = ???
 }
