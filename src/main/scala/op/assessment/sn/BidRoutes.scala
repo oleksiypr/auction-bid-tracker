@@ -1,4 +1,4 @@
-package op.assessment.so1
+package op.assessment.sn
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.StatusCodes
@@ -7,8 +7,8 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.directives.MethodDirectives.get
 import akka.http.scaladsl.server.directives.PathDirectives.path
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
-import op.assessment.so1.BidRoutes.{Ammount, Bids, Fail}
-import op.assessment.so1.BidsRepository.{Bid, Item, Player}
+import op.assessment.sn.BidRoutes.{Ammount, Bids, Fail}
+import op.assessment.sn.BidsRepository.{Bid, Item, Player}
 
 import scala.util.{Failure, Success}
 

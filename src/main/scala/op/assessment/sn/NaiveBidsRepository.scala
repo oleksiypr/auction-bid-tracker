@@ -1,7 +1,7 @@
-package op.assessment.so1
+package op.assessment.sn
 
 import com.redis.RedisClient
-import op.assessment.so1.BidsRepository.{Bid, Item, Player}
+import op.assessment.sn.BidsRepository.{Bid, Item, Player}
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -9,12 +9,11 @@ object BidsRepository {
 
   case class Item(item: String)
   case class Player(name: String)
-
   case class Bid(
-    player: String,
-    item: String,
-    value: Int
-  )
+      player: String,
+      item: String,
+      value: Int
+    )
 }
 
 trait BidsRepository {

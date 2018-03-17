@@ -1,4 +1,4 @@
-package op.assessment.so1
+package op.assessment.sn
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http

@@ -1,12 +1,12 @@
-package op.assessment.so1
+package op.assessment.sn
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import op.assessment.so1.BidRoutes.Ammount
-import op.assessment.so1.BidRoutesSpec.{BidsNotFoundRepo, FailBidsRepo, FakeBidsRepo}
+import op.assessment.sn.BidRoutes.Ammount
+import op.assessment.sn.BidRoutesSpec.{BidsNotFoundRepo, FailBidsRepo, FakeBidsRepo}
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
 import scala.concurrent.{ExecutionContext, Future}
